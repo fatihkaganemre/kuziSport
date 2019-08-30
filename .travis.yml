@@ -4,3 +4,6 @@ xcode_project: Karate.xcodeproj
 xcode_scheme: Karate
 xcode_sdk: iphonesimulator11.3
 podfile: Podfile
+
+before_install: 
+	- bundle install
