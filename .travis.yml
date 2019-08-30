@@ -2,4 +2,5 @@ language: swift
 osx_image: xcode10.3
 xcode_project: Karate.xcodeproj
 xcode_scheme: Karate
-xcode_destination: platform=iOS Simulator,OS=11.0,name=iPad X
+xcode_sdk: iphonesimulator11.3
+podfile: Podfile
