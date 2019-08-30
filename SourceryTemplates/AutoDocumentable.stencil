@@ -1,0 +1,121 @@
+@testable import Karate
+{% set spacing %}    {% endset %}
+
+struct DocumentationField {
+{{ spacing }}enum `Type` {
+{{ spacing }}{{ spacing }}case plain(String)
+{{ spacing }}{{ spacing }}case enumerated([String])
+{{ spacing }}{{ spacing }}indirect case array([DocumentationField])
+{{ spacing }}{{ spacing }}indirect case nested([DocumentationField])
+{{ spacing }}}
+{{ spacing }}let name: String
+{{ spacing }}let type: Type
+{{ spacing }}let isOptional: Bool
+}
+
+struct ModelDocumentation {
+{{ spacing }}enum `Type` {
+{{ spacing }}{{ spacing }}case model
+{{ spacing }}{{ spacing }}case array
+{{ spacing }}}
+{{ spacing }}let name: String
+{{ spacing }}let fields: [DocumentationField]
+{{ spacing }}let type: Type
+
+{{ spacing }}var jsonRepresentation: String {
+{{ spacing }}{{ spacing }}let prefixWithJson: (String) -> String = { [type] in
+{{ spacing }}{{ spacing }}{{ spacing }}switch type {
+{{ spacing }}{{ spacing }}{{ spacing }}case .array:
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "\"models\":[{\($0)}]"
+{{ spacing }}{{ spacing }}{{ spacing }}case .model:
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "\"fields\": {\($0)}"
+{{ spacing }}{{ spacing }}{{ spacing }}}
+{{ spacing }}{{ spacing }}}
+
+{{ spacing }}{{ spacing }}let string = """
+{
+"name" : "\(name)",
+\(prefixWithJson(fields.map(self.jsonRepresentation).joined(separator: ",")))
+}
+"""
+{{ spacing }}{{ spacing }}return string.data(using: .utf8)
+{{ spacing }}{{ spacing }}{{ spacing }}.flatMap {
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}try? JSONSerialization.jsonObject(
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}with: $0,
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}options: []
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }})
+{{ spacing }}{{ spacing }}{{ spacing }}}.flatMap {
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}try? JSONSerialization.data(
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}withJSONObject: $0,
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}options: .prettyPrinted
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }})
+{{ spacing }}{{ spacing }}{{ spacing }}}.flatMap {
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}String(data: $0, encoding: .utf8)
+{{ spacing }}{{ spacing }}{{ spacing }}} ?? ""
+{{ spacing }}{{ spacing }}}
+
+{{ spacing }}private func jsonRepresentation(
+{{ spacing }}{{ spacing }}ofDocumentationField documentationField: DocumentationField
+{{ spacing }}{{ spacing }}) -> String {
+{{ spacing }}{{ spacing }}let typeDescription: String = {
+{{ spacing }}{{ spacing }}{{ spacing }}switch documentationField.type {
+{{ spacing }}{{ spacing }}{{ spacing }}case .plain(let value):
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "\"\(value)\""
+{{ spacing }}{{ spacing }}{{ spacing }}case .enumerated(let options):
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "\"ONE OF: \(options.joined(separator: ";"))\""
+{{ spacing }}{{ spacing }}{{ spacing }}case .array(let fields):
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "[{\(fields.map(jsonRepresentation).joined(separator: ","))}]"
+{{ spacing }}{{ spacing }}{{ spacing }}case .nested(let fields):
+{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}return "{\(fields.map(jsonRepresentation).joined(separator: ","))}"
+{{ spacing }}{{ spacing }}{{ spacing }}}
+{{ spacing }}{{ spacing }}}()
+
+{{ spacing }}{{ spacing }}let optionalString = documentationField.isOptional ? "" : "[*]"
+{{ spacing }}{{ spacing }}return "\"\(optionalString)\(documentationField.name)\" : \(typeDescription)"
+{{ spacing }}}
+}
+
+protocol Documentable {
+{{ spacing }}static var documentation: ModelDocumentation { get }
+}
+
+extension Array: Documentable where Element: Documentable {
+{{ spacing }}static var documentation: ModelDocumentation {
+{{ spacing }}{{ spacing }}return ModelDocumentation(
+{{ spacing }}{{ spacing }}{{ spacing }}name: Element.documentation.name,
+{{ spacing }}{{ spacing }}{{ spacing }}fields: Element.documentation.fields,
+{{ spacing }}{{ spacing }}{{ spacing }}type: .array
+{{ spacing }}{{ spacing }})
+{{ spacing }}}
+}
+
+{% macro variableName type variable %}{% map type.containedTypes into containedTypes using containedType %}{% if containedType.based.CodingKey %}{{ containedType.name }}{% endif %}{% endmap %}{% set containedTypesJoined %}{{ containedTypes|join:"" }}{% endset %}{% if containedTypesJoined == "" %}"{{ variable.name }}"{% else %}{{ containedTypesJoined }}.{{ variable.name }}.rawValue{% endif %}{% endmacro %}
+{% macro documentationField type extraSpacing %}
+{% set defaultIndent %}{{ spacing }}{{ spacing }}{{ spacing }}{{ spacing }}{{ extraSpacing }}{% endset %}
+{% set normalAndExtraSpacing %}{{ spacing }}{{ extraSpacing }}{% endset %}
+{% set doubleAndExtraSpacing %}{{ spacing }}{{ spacing }}{{ extraSpacing }}{% endset %}
+{% for variable in type.storedVariables %}
+{% set variableCleanedName %}{{ variable.typeName | replace:"[","" | replace:"]","" | replace:"?","" }}{% endset %}
+{% set isOptional %}{% if variable.isOptional %}true{% else %}false{% endif %}{% endset %}
+{% set computedType %}{% if variableCleanedName == type.localName %}.plain("{{variable.unwrappedTypeName}}"){% elif variable.type.annotations.SingleValueCodable %}.plain("{{variable.type.annotations.SingleValueCodable}}"){% elif variable.typeName.array.elementType.annotations.SingleValueCodable %}.plain("[{{variable.typeName.array.elementType.annotations.SingleValueCodable}}]"){% elif variable.type|enum %}{% map variable.type.cases into cases using case %}"{{ case.name }}"{% if not maploop.last %},{% endif %}{% endmap %}.enumerated([{{ cases|join:"" }}]){% elif variable.typeName.array.elementType.based.Codable or variable.typeName.array.elementType.based.Decodable %}.array([{% call documentationField variable.typeName.array.elementType doubleAndExtraSpacing %}{{ defaultIndent }}]){% elif variable.typeName.actualTypeName and variable.typeName.actualTypeName != variable.typeName and not variable.type.based.Codable %}.plain("{{variable.typeName.actualTypeName.unwrappedTypeName}}"){% elif variable.type.based.Decodable or variable.type.based.Codable or variable.typeName.actualTypeName.based.Codable or variable.typeName.actualTypeName.based.Decodable %}.nested([{% call documentationField variable.type doubleAndExtraSpacing %}{{ defaultIndent }}]){% else %}.plain("{{variable.unwrappedTypeName}}"){% endif %}{% endset %}
+{{ defaultIndent }}DocumentationField(
+{{ defaultIndent }}{{ spacing }}name: {% call variableName type variable %},
+{{ defaultIndent }}{{ spacing }}type: {{ computedType }},
+{{ defaultIndent }}{{ spacing }}isOptional: {{ isOptional }}
+{{ defaultIndent }}){% if not forloop.last %},{% endif %}
+{% endfor %}
+{% endmacro %}
+{% set noSpacing %}{% endset %}
+{% for type in types.structs where type.based.Decodable or type.based.Codable %}
+{% if not type.annotations.DisableAutoDocumentable %}
+struct {{ type.name | replace:".","_" | replace:"`","" }}Documentation: Documentable {
+{{ spacing }}static var documentation: ModelDocumentation {
+{{ spacing }}{{ spacing }}return ModelDocumentation(
+{{ spacing }}{{ spacing }}{{ spacing }}name: "{{ type.name }}",
+{{ spacing }}{{ spacing }}{{ spacing }}fields: [{% call documentationField type noSpacing %}{{ spacing }}{{ spacing }}{{ spacing }}],
+{{ spacing }}{{ spacing }}{{ spacing }}type: .model
+{{ spacing }}{{ spacing }})
+{{ spacing }}}
+}
+{% endif %}
+{% endfor %}

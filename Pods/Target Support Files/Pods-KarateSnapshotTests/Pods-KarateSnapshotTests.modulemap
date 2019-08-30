@@ -1,0 +1,6 @@
+framework module Pods_KarateSnapshotTests {
+  umbrella header "Pods-KarateSnapshotTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
