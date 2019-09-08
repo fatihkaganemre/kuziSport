@@ -6,3 +6,6 @@ podfile: Podfile
 
 install:
   - bundle install
+
+script:
+  - xcodebuild [DEFAULT_OPTIONS] CODE_SIGNING_REQUIRED=NO
