@@ -8,4 +8,4 @@ install:
   - bundle install
 
 script:
-  - xcodebuild [DEFAULT_OPTIONS] CODE_SIGNING_REQUIRED=NO
+  - -workspace Karate.xcworkspace -scheme Karate CODE_SIGNING_REQUIRED=NO
