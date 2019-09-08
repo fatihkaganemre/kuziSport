@@ -8,4 +8,4 @@ install:
   - bundle install
 
 script:
-  - -workspace Karate.xcworkspace -scheme Karate CODE_SIGNING_REQUIRED=NO
+  - CODE_SIGNING_REQUIRED=NO
