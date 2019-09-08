@@ -2,7 +2,6 @@ language: swift
 osx_image: xcode10.3
 xcode_project: Karate.xcodeproj
 xcode_scheme: Karate
-xcode_sdk: iphonesimulator11.3
 podfile: Podfile
 
 install:
