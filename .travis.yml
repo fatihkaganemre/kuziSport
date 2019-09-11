@@ -12,12 +12,13 @@ script:
 
 stages: 
   - test
-  - name: preProduction
-    if: branch = develop
-  - name: production
-    if: branch = master
+  - preProduction
+  - production
 
 jobs: 
   include:
     - stage: preProduction
 	  name: "preProduction"
+	  branches: 
+	    only: 
+	    - develop
