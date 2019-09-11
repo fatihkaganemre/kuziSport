@@ -27,8 +27,6 @@ struct MapViewHelper {
     }
 }
 
-// TO DO: Make MapViewHelper more testable , cosider to subclass MKMapView or create a dependency
-
 fileprivate class PropertyAnnotation: NSObject, MKAnnotation {
     let title: String?
     let coordinate: CLLocationCoordinate2D
