@@ -5,17 +5,19 @@ xcode_scheme: Karate
 podfile: Podfile
 
 install:
-  	- bundle install
+  - bundle install
 
 script:
-  	- CODE_SIGNING_REQUIRED=NO
+  - CODE_SIGNING_REQUIRED=NO
 
 stages: 
-	- test
-	- name: production
-	if: brabch = develop
+  - test
+  - name: preProduction
+    if: branch = develop
+  - name: production
+    if: branch = master
 
 jobs: 
-	include:
-		- stage: production
-		name: "Production"
+  include:
+    - stage: preProduction
+	  name: "preProduction"
