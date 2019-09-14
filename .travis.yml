@@ -5,21 +5,14 @@ podfile: Podfile
 install:
   - bundle install
 
-stages: 
-  - test
-  - preProduction
-  - production
-
 jobs: 
   include:
-    if: branch = develop
-    - stage: preProduction
-      name: "PreProduction"
+  	if: branch = develop
+	- stage: preProduction
       script: 
         - xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
     if: branch: master
 	- stage: production
-	  name: "Production"
 	  script: 
 	    - xcodebuild -project Karate.xcodeproj -scheme Karate
 
