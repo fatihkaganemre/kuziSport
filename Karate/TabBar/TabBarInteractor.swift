@@ -42,6 +42,8 @@ class TabBarInteractor {
                     selectedImage: UIImage(named: "infoSelected")
                 )
             }
+            
+            // TO DO: There will be notifications tab
         }
     }
     
