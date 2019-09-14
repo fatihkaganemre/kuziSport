@@ -15,17 +15,13 @@ stages:
 
 jobs: 
   include:
+  	if: branch = develop
     - stage: preProduction
       name: "PreProduction"
 	  script: xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
-	  branches: 
-	    only: 
-	    - develop
+    if: branch: master
 	- stage: production
 	  name: "Production"
 	  script: xcodebuild -project Karate.xcodeproj -scheme Karate
-	  branches: 
-	    only:
-	    - master
 
 
