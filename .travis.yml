@@ -1,14 +1,12 @@
 language: swift
 osx_image: xcode10.3
-xcode_project: Karate.xcodeproj
-xcode_scheme: Karate
 podfile: Podfile
 
 install:
   - bundle install
 
 script:
-  - CODE_SIGNING_REQUIRED=NO
+  - 
 
 stages: 
   - test
@@ -18,7 +16,9 @@ stages:
 jobs: 
   include:
     - stage: preProduction
-	  name: "preProduction"
+      name: "PreProduction"
+	  script: xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
 	  branches: 
 	    only: 
 	    - develop
+
