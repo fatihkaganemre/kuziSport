@@ -21,4 +21,11 @@ jobs:
 	  branches: 
 	    only: 
 	    - develop
+	- stage: production
+	  name: "Production"
+	  script: xcodebuild -project Karate.xcodeproj -scheme Karate
+	  branches: 
+	    only:
+	    - master
+
 
