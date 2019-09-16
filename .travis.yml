@@ -8,9 +8,11 @@ install:
 
 jobs: 
   - include:
-    - stage: deploy
-      script: .travis/deploy.sh
-
+    - stage: stages
+      script: .travis/stages.sh
+      branches:
+        only:
+ 		- develop
 
 stages: 
-  - deploy
+  - stages
