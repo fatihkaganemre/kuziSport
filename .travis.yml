@@ -6,15 +6,15 @@ install:
   - bundle install
 
 jobs: 
-	include:
-		- stage: preProduction
-      	script: 
-        	- xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
-		- stage: production
-	  	script: 
-	    	- xcodebuild -project Karate.xcodeproj -scheme Karate
-	  	branches:
-	    	only:
-	    	- master
+  include:
+	- stage: preProduction
+      script: 
+        - xcodebuild clean build -workspace Karate.xcworkspace -scheme "Karate" -sdk iphonesimulator -destination "platform=iOS Simulator.OS=11.3.name=iPhone 8" CODE_SIGNING_REQUIRED=NO
+	- stage: production
+	  script: 
+	    - xcodebuild -workspace Karate.xcworkspace -scheme "Karate"
+	  branches:
+	    only:
+	    - master
 
 
