@@ -6,16 +6,15 @@ install:
   - bundle install
 
 jobs: 
-  include:
-  	if: branch = develop
-	- stage: preProduction
-      script: 
-        - xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
-	- stage: production
-	  script: 
-	    - xcodebuild -project Karate.xcodeproj -scheme Karate
-	  branches:
-	    only:
-	    - master
+	include:
+		- stage: preProduction
+      	script: 
+        	- xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
+		- stage: production
+	  	script: 
+	    	- xcodebuild -project Karate.xcodeproj -scheme Karate
+	  	branches:
+	    	only:
+	    	- master
 
 
