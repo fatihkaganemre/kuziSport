@@ -8,9 +8,7 @@ install:
 
 stages: 
   - development
-    if: branch = develop
   - production
-    if: branch = master
 
 jobs: 
   - include:
