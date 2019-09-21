@@ -6,13 +6,16 @@ podfile: Podfile
 install:
   - bundle install
 
+stages: 
+  - development
+    if: branch = develop
+  - production
+    if: branch = master
+
 jobs: 
   - include:
-    - stage: stages
-      script: .travis/stages.sh
-      branches:
-        only:
- 		- develop
+    - stage: development
+      script: .travis/development.sh
+    - stage: production
+      script: .travis/production.sh
 
-stages: 
-  - stages
