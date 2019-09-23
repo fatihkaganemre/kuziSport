@@ -6,7 +6,7 @@ podfile: Podfile
 install:
   - bundle install
 
-script:
+before_script:
   - bundle exec pod install
 
 stages: 
