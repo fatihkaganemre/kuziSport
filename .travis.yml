@@ -6,6 +6,9 @@ podfile: Podfile
 install:
   - bundle install
 
+script:
+  - bundle exec pod install
+
 stages: 
   - development
   - production
