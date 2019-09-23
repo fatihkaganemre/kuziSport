@@ -1,4 +1,4 @@
 /.DS_Store
 *.xcuserdata
 KarateSnapshotTests/**
- Karate.xcworkspace/xcuserdata/**
+xcuserdata/*
