@@ -15,12 +15,10 @@ jobs:
     - stage: development
       provider: script
       script: bash .travis/development.sh
-        branches:
-          only: develop
+      if: branch = develop
     - stage: production
       provider: script
       script: bash .travis/production.sh
-        branches: 
-          only: master
+      if: branch = master
 
 
