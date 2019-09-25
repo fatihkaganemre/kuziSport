@@ -15,8 +15,12 @@ jobs:
     - stage: development
       provider: script
       script: bash .travis/development.sh
+        branches:
+          only: develop
     - stage: production
       provider: script
-      script: bash .travis/production.shED=NO
+      script: bash .travis/production.sh
+        branches: 
+          only: master
 
 
