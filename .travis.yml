@@ -1,24 +1,24 @@
+os: osx
 language: swift
 osx_image: xcode10.3
-podfile: Podfile
 
 install:
   - bundle install
-
-script:
-  - 
+  - bundle exec pod install
 
 stages: 
-  - test
-  - preProduction
+  - development
   - production
 
 jobs: 
   include:
-    - stage: preProduction
-      name: "PreProduction"
-	  script: xcodebuild -project Karate.xcodeproj -scheme Karate CODE_SIGNING_REQUIRED=NO
-	  branches: 
-	    only: 
-	    - develop
+    - stage: development
+      provider: script
+      script: bash .travis/development.sh
+      if: branch = develop
+    - stage: production
+      provider: script
+      script: bash .travis/production.sh
+      if: branch = master
+
 
