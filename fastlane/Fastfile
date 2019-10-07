@@ -1,0 +1,38 @@
+
+default_platform(:ios)
+setup_travis
+
+platform :ios do
+  desc "Description of what the lane does"
+  lane :production do
+    create_keychain(
+  	 unlock: true,
+  	 name: "login",
+  	 password: "328445"  	
+  	)
+  end
+
+  desc "Build app"
+  lane :build do 
+  	create_keychain(
+  	 unlock: true,
+  	 name: "login",
+  	 password: "328445"  	
+  	)
+  	import_certificate(
+  	 certificate_path: "Certificate/kuziSportCertificate.cer",
+  	 certificate_password: "",
+  	 log_output: true,
+  	 keychain_name: "login"
+  	)
+  	sigh(
+  	 force: true
+  	)
+  	build_app(
+  	 scheme: "Karate",
+     workspace: "Karate.xcworkspace",
+     include_bitcode: true,
+     clean: true,
+  	)
+  end
+end

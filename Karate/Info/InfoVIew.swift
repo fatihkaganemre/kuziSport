@@ -83,6 +83,23 @@ class InfoView: UIView {
     }
     
     private func buildAddressTextView() {
+        
+        let textView: UITextView = {
+            let tv = UITextView()
+            tv.translatesAutoresizingMaskIntoConstraints = false
+            tv.attributedText = attributedAddressTitle()
+            tv.textColor = .black
+            tv.textAlignment = .center
+            tv.isEditable = false
+            tv.isScrollEnabled = false
+            tv.sizeToFit()
+            return tv
+        }()
+        
+        stackView.addArrangedSubview(textView)
+    }
+    
+    private func attributedAddressTitle() -> NSMutableAttributedString {
         let mutableAttributedString = NSMutableAttributedString()
         let attributedTitle = NSAttributedString(
             string: "ADDRESS",
@@ -94,21 +111,10 @@ class InfoView: UIView {
             string: "\n ul. Świętego Michała 50\n 60-193 Poznań",
             attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15, weight: .regular)]
         )
+        
         mutableAttributedString.append(attributedAddress)
         
-        let textView: UITextView = {
-            let tv = UITextView()
-            tv.translatesAutoresizingMaskIntoConstraints = false
-            tv.attributedText = mutableAttributedString
-            tv.textColor = .black
-            tv.textAlignment = .center
-            tv.isEditable = false
-            tv.isScrollEnabled = false
-            tv.sizeToFit()
-            return tv
-        }()
-        
-        stackView.addArrangedSubview(textView)
+        return mutableAttributedString
     }
     
     @objc private func buildFacebookButton() {
