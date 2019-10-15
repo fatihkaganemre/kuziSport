@@ -1,4 +1,4 @@
 /.DS_Store
 *.xcuserdata
 KarateSnapshotTests/**
-xcuserdata/*
+**/fastlane/report.xml
