@@ -19,20 +19,15 @@ platform :ios do
   	 name: "login",
   	 password: "328445"  	
   	)
-  	import_certificate(
-  	 certificate_path: "Certificate/kuziSportCertificate.cer",
-  	 certificate_password: "",
-  	 log_output: true,
-  	 keychain_name: "login"
-  	)
-  	sigh(
-  	 force: true
-  	)
+    match(
+     type: "development",
+     git_url: "https://github.com/fatihkaganemre/Certificates.git"
+    )
   	build_app(
   	 scheme: "Karate",
      workspace: "Karate.xcworkspace",
      include_bitcode: true,
-     clean: true,
+     clean: true
   	)
   end
 end
